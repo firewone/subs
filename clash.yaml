@@ -1,0 +1,74 @@
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: info
+ipv6: false
+
+proxies:
+  - name: "(giimin) VMess WS"
+    type: vmess
+    server: eduserv1.aiosc.my.id
+    port: 443
+    uuid: c563266e-8cb9-4a69-b9fe-365252237128
+    alterId: 0
+    cipher: auto
+    tls: true
+    servername: eduserv1.aiosc.my.id
+    network: ws
+    ws-opts:
+      path: /vmess
+      headers:
+        Host: eduserv1.aiosc.my.id
+
+  - name: "(leegiiyo) VMess gRPC"
+    type: vmess
+    server: eduserv3.aiosc.my.id
+    port: 443
+    uuid: a57a6acd-1de7-4dd6-a26e-38670fc7802b
+    alterId: 0
+    cipher: auto
+    tls: true
+    servername: eduserv3.aiosc.my.id
+    network: grpc
+    grpc-opts:
+      grpc-service-name: vmess-service
+
+proxy-groups:
+  - name: "🚀 Best Ping"
+    type: url-test
+    proxies:
+      - "(giimin) VMess WS"
+      - "(leegiiyo) VMess gRPC"
+    url: http://www.gstatic.com/generate_204
+    interval: 180
+    tolerance: 50
+
+  - name: "🔁 Fallback"
+    type: fallback
+    proxies:
+      - "(giimin) VMess WS"
+      - "(leegiiyo) VMess gRPC"
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+
+  - name: "⚖️ Load Balance"
+    type: load-balance
+    proxies:
+      - "(giimin) VMess WS"
+      - "(leegiiyo) VMess gRPC"
+    url: http://www.gstatic.com/generate_204
+    interval: 300
+    strategy: consistent-hashing
+
+  - name: "⚡ Proxy"
+    type: select
+    proxies:
+      - "🚀 Best Ping"
+      - "🔁 Fallback"
+      - "⚖️ Load Balance"
+      - "(giimin) VMess WS"
+      - "(leegiiyo) VMess gRPC"
+      - DIRECT
+
+rules:
+  - MATCH,⚡ Proxy
