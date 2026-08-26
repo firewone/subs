@@ -1,0 +1,100 @@
+{
+  "log": {
+    "level": "info"
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "dns-remote",
+        "address": "https://cloudflare-dns.com/dns-query",
+        "detour": "auto"
+      }
+    ],
+    "final": "dns-remote",
+    "strategy": "prefer_ipv4"
+  },
+  "inbounds": [
+    {
+      "type": "tun",
+      "tag": "tun-in",
+      "interface_name": "tun0",
+      "inet4_address": "172.19.0.1/30",
+      "auto_route": true,
+      "strict_route": true,
+      "stack": "mixed"
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vmess",
+      "tag": "giimin-ws",
+      "server": "eduserv1.aiosc.my.id",
+      "server_port": 443,
+      "uuid": "c563266e-8cb9-4a69-b9fe-365252237128",
+      "security": "auto",
+      "transport": {
+        "type": "ws",
+        "path": "/vmess",
+        "headers": {
+          "Host": "eduserv1.aiosc.my.id"
+        }
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "eduserv1.aiosc.my.id",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vmess",
+      "tag": "leegiiyo-grpc",
+      "server": "eduserv3.aiosc.my.id",
+      "server_port": 443,
+      "uuid": "a57a6acd-1de7-4dd6-a26e-38670fc7802b",
+      "security": "auto",
+      "transport": {
+        "type": "grpc",
+        "service_name": "vmess-service"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "eduserv3.aiosc.my.id",
+        "insecure": true
+      }
+    },
+    {
+      "type": "urltest",
+      "tag": "AUTO",
+      "outbounds": [
+        "giimin-ws",
+        "leegiiyo-grpc"
+      ],
+      "url": "http://hi.bonds.id/ping",
+      "interval": "5m",
+      "tolerance": 50
+    },
+    {
+      "type": "selector",
+      "tag": "PROXY",
+      "outbounds": [
+        "AUTO",
+        "giimin-ws",
+        "leegiiyo-grpc",
+        "direct"
+      ],
+      "default": "AUTO"
+    },
+    {
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
+    }
+  ],
+  "route": {
+    "auto_detect_interface": true,
+    "final": "PROXY"
+  }
+}
