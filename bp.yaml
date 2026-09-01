@@ -20,17 +20,15 @@ dns:
   use-host: true
   enhanced-mode: fake-ip
   listen: 0.0.0.0:7874
+  default-nameserver:
+    - 8.8.8.8
+    - 1.0.0.1          # boleh diganti 9.9.9.9 atau 94.140.14.14 kalau mau
   nameserver:
-    - https://dns.akbxr.com/dns-query
+    - https://dns.akbxr.com/dns-query          # utama (judol blocker)
+    - https://freedns.controld.com/x-hagezi-pro
+  fallback:
     - https://freedns.controld.com/x-hagezi-pro
     - https://root.hagezi.org/dns-query
-
-  fallback:
-    - https://freedns.controld.com/p2
-
-  default-nameserver:
-    - 76.76.2.0
-    - 76.76.10.0
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
     - "*.lan"
