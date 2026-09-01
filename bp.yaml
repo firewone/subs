@@ -24,13 +24,13 @@ dns:
     - https://dns.akbxr.com/dns-query
     - https://freedns.controld.com/x-hagezi-pro
     - https://root.hagezi.org/dns-query
+
   fallback:
     - https://freedns.controld.com/p2
-    - 1.1.1.1
-    - 8.8.4.4
+
   default-nameserver:
-    - 8.8.8.8
-    - 1.1.1.1
+    - 76.76.2.0
+    - 76.76.10.0
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
     - "*.lan"
