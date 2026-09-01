@@ -7,10 +7,17 @@ ipv6: false
 dns:
   enable: true
   ipv6: false
-  enhanced-mode: fake-ip
-  nameserver:
-    - https://freedns.controld.com/x-hagezi-ultimate
+  enhanced-mode: redir-host
+
   default-nameserver:
+    - 1.1.1.1
+    - 9.9.9.9
+
+  nameserver:
+    - 76.76.2.45
+    - 76.76.10.45
+
+  proxy-server-nameserver:
     - 1.1.1.1
     - 9.9.9.9
     
