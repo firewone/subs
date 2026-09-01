@@ -10,7 +10,8 @@ dns:
   ipv6: false
   enhanced-mode: fake-ip
   nameserver:
-    - https://freedns.controld.com/x-hagezi-ultimate
+    - 76.76.2.45
+    - 76.76.10.45
   fallback:
     - https://freedns.controld.com/x-hagezi-pro
   respect-rules: true
