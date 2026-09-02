@@ -26,11 +26,9 @@ dns:
     - 8.8.8.8                                 # backup biar tetap jalan
   fallback:
     - https://freedns.controld.com/x-hagezi-pro
-    - 1.1.1.1
     - 8.8.4.4
   default-nameserver:
     - 8.8.8.8
-    - 1.1.1.1
   fake-ip-range: 198.18.0.1/16
   fake-ip-filter:
     - "*.lan"
