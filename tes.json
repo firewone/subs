@@ -1,100 +1,117 @@
 {
-  "log": {
-    "level": "info"
-  },
-  "dns": {
-    "servers": [
-      {
-        "tag": "dns-remote",
-        "address": "https://cloudflare-dns.com/dns-query",
-        "detour": "auto"
-      }
-    ],
-    "final": "dns-remote",
-    "strategy": "prefer_ipv4"
-  },
-  "inbounds": [
-    {
-      "type": "tun",
-      "tag": "tun-in",
-      "interface_name": "tun0",
-      "inet4_address": "172.19.0.1/30",
-      "auto_route": true,
-      "strict_route": true,
-      "stack": "mixed"
-    }
-  ],
-  "outbounds": [
-    {
-      "type": "vmess",
-      "tag": "giimin-ws",
-      "server": "eduserv1.aiosc.my.id",
-      "server_port": 443,
-      "uuid": "c563266e-8cb9-4a69-b9fe-365252237128",
-      "security": "auto",
-      "transport": {
-        "type": "ws",
-        "path": "/vmess",
-        "headers": {
-          "Host": "eduserv1.aiosc.my.id"
-        }
-      },
-      "tls": {
-        "enabled": true,
-        "server_name": "eduserv1.aiosc.my.id",
-        "insecure": true
-      }
-    },
-    {
-      "type": "vmess",
-      "tag": "leegiiyo-grpc",
-      "server": "eduserv3.aiosc.my.id",
-      "server_port": 443,
-      "uuid": "a57a6acd-1de7-4dd6-a26e-38670fc7802b",
-      "security": "auto",
-      "transport": {
-        "type": "grpc",
-        "service_name": "vmess-service"
-      },
-      "tls": {
-        "enabled": true,
-        "server_name": "eduserv3.aiosc.my.id",
-        "insecure": true
-      }
-    },
-    {
-      "type": "urltest",
-      "tag": "AUTO",
-      "outbounds": [
-        "giimin-ws",
-        "leegiiyo-grpc"
-      ],
-      "url": "http://hi.bonds.id/ping",
-      "interval": "5m",
-      "tolerance": 50
-    },
-    {
-      "type": "selector",
-      "tag": "PROXY",
-      "outbounds": [
-        "AUTO",
-        "giimin-ws",
-        "leegiiyo-grpc",
-        "direct"
-      ],
-      "default": "AUTO"
-    },
-    {
-      "type": "direct",
-      "tag": "direct"
-    },
-    {
-      "type": "block",
-      "tag": "block"
-    }
-  ],
-  "route": {
-    "auto_detect_interface": true,
-    "final": "PROXY"
-  }
+		"inbounds": [],
+		"observatory": {
+				"subjectSelector": [
+						"VMESS-WS",
+						"VMESS-GRPC"
+				]
+		},
+		"outbounds": [
+				{
+						"mux": {
+								"enabled": false
+						},
+						"protocol": "vmess",
+						"settings": {
+								"vnext": [
+										{
+												"address": "eduserv1.aiosc.my.id",
+												"port": 443,
+												"users": [
+														{
+																"alterId": 0,
+																"id": "c563266e-8cb9-4a69-b9fe-365252237128",
+																"level": 8,
+																"security": "auto"
+														}
+												]
+										}
+								]
+						},
+						"streamSettings": {
+								"network": "ws",
+								"security": "tls",
+								"tlsSettings": {
+										"allowInsecure": true,
+										"serverName": "eduserv1.aiosc.my.id"
+								},
+								"wsSettings": {
+										"headers": {
+												"Host": "eduserv1.aiosc.my.id"
+										},
+										"path": "/vmess"
+								}
+						},
+						"tag": "VMESS-WS"
+				},
+				{
+						"mux": {
+								"enabled": false
+						},
+						"protocol": "vmess",
+						"settings": {
+								"vnext": [
+										{
+												"address": "eduserv3.aiosc.my.id",
+												"port": 443,
+												"users": [
+														{
+																"alterId": 0,
+																"id": "a57a6acd-1de7-4dd6-a26e-38670fc7802b",
+																"level": 8,
+																"security": "auto"
+														}
+												]
+										}
+								]
+						},
+						"streamSettings": {
+								"grpcSettings": {
+										"serviceName": "vmess-service"
+								},
+								"network": "grpc",
+								"security": "tls",
+								"tlsSettings": {
+										"allowInsecure": true,
+										"serverName": "eduserv3.aiosc.my.id"
+								}
+						},
+						"tag": "VMESS-GRPC"
+				},
+				{
+						"protocol": "freedom",
+						"tag": "DIRECT"
+				}
+		],
+		"policy": {
+				"levels": {
+						"8": {
+								"connIdle": 300,
+								"downlinkOnly": 1,
+								"handshake": 4,
+								"uplinkOnly": 1
+						}
+				}
+		},
+		"routing": {
+				"balancers": [
+						{
+								"selector": [
+										"VMESS-"
+								],
+								"strategy": {
+										"type": "leastPing"
+								},
+								"tag": "BEST-PING"
+						}
+				],
+				"domainStrategy": "AsIs",
+				"rules": [
+						{
+								"balancerTag": "BEST-PING",
+								"network": "tcp,udp",
+								"type": "field"
+						}
+				]
+		}
 }
